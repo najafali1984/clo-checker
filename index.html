@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CLO Paper Checker</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--tx:#1b2430;--mu:#5d6b7b;--bd:#dde2e8;--ac:#1f6feb;--ok:#1a8a4a;--wr:#c27a00;--bad:#c93c3c;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12161b;--card:#1b2129;--tx:#e8edf2;--mu:#98a5b3;--bd:#2d3641;--ac:#5aa0ff;--ok:#4cc27d;--wr:#e0a030;--bad:#ef6b6b;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#12161b;--card:#1b2129;--tx:#e8edf2;--mu:#98a5b3;--bd:#2d3641;--ac:#5aa0ff;--ok:#4cc27d;--wr:#e0a030;--bad:#ef6b6b;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:980px;margin:0 auto;padding:16px}
+h1{font-size:22px;margin:4px 0}p.s{color:var(--mu);margin:0 0 14px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px;margin-bottom:14px}
+label{display:block;font-weight:600;margin:8px 0 4px;font-size:13px}
+select,textarea,input[type=file]{width:100%;padding:8px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font:inherit}
+textarea{min-height:90px}
+button{background:var(--ac);color:#fff;border:0;border-radius:8px;padding:10px 16px;font:inherit;font-weight:600;cursor:pointer}
+button.g{background:transparent;color:var(--ac);border:1px solid var(--bd)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:700px){.row{grid-template-columns:1fr}}
+.mu{color:var(--mu);font-size:13px}
+.q{border-top:1px solid var(--bd);padding:12px 0}.q:first-child{border-top:0}
+.qh{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-weight:700}
+.pill{padding:2px 10px;border-radius:99px;font-size:13px;font-weight:700;color:#fff}
+.bar{height:8px;background:var(--bd);border-radius:5px;overflow:hidden;margin:3px 0}.bar i{display:block;height:100%;background:var(--ac)}
+.bl{display:flex;justify-content:space-between;font-size:12px;color:var(--mu)}
+.qt{color:var(--mu);font-size:13px;margin:4px 0 6px;white-space:pre-wrap}
+.big{font-size:30px;font-weight:800}
+.sum{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.wrap{overflow-x:auto}
+</style></head><body><div id="root"></div><script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script><script src="https://cdn.jsdelivr.net/npm/htm@3.1.1/dist/htm.umd.js"></script><script>
+const BUILT={
+"Programming Fundamentals (CS1134)":["Define basic problem-solving strategies and essential principles of computational thinking. (C1)","Discuss programming constructs such as variables, control flow, functions, arrays, and data structures. (C2)","Apply debugging techniques to programs in order to detect and correct logical and syntactical errors. (C3)","Differentiate software solutions in terms of efficiency, modularity, and adherence to coding standards. (C4)"],
+"Object Oriented Programming (CS2104)":["Explain the fundamental principles of object-oriented design, history, advantages, and key programming concepts including classes, objects, and data encapsulation. (C2)","Apply object-oriented features such as constructors, destructors, access modifiers, static members, function overloading, operator overloading, and relationships (composition, aggregation, inheritance). (C3)","Analyze advanced concepts like multiple inheritance, polymorphism, abstract classes, interfaces, generic programming (templates), and the Standard Template Library (STL). (C4)","Implement object streams, serialization, and exception handling mechanisms in real-world applications. (C3)"],
+"Data Structures & Algorithms (CS2124)":["Explain fundamental concepts of data structures and algorithms, including complexity analysis. (C2)","Implement basic static and dynamic data structures (arrays, linked lists, stacks, queues, trees) and relevant standard algorithms (sorting, searching, and traversal). (C3)","Analyze the strengths, weaknesses, and trade-offs of different data structures and algorithms for problem solving. (C4)","Justify appropriate data structures and algorithms to develop efficient solutions for application problems. (C4)"],
+"Operating Systems (CS3104)":["Explain the fundamental concepts, goals, and components of operating systems. (C2)","Describe the core OS structures and mechanisms, including processes, threads, and memory management. (C2)","Apply OS algorithms (CPU scheduling, process synchronization, memory and file management) to solve computing problems. (C3)","Analyze the OS algorithms to assess performance, efficiency, and resource utilization. (C4)"],
+"Software Design & Architecture (SE3213)":["Understand the role of design and its major activities within the OO software development process, with a focus on the Unified process. (C1)","Comprehend the advantages of consistent and reliable software design. (C2)","Design OOD models and refine them to reflect implementation details. (C3)","Apply and use UML to visualize and document the design of software systems. (C4)","Implement the design model using an object-oriented programming language. (C5)"],
+"Artificial Intelligence (CS4223)":["Explain fundamental concepts, paradigms, and hypotheses of Artificial Intelligence, including the difference between cybernetic and artificial intelligence, and the objectives of Weak AI and Strong AI. (C2)","Apply AI problem-solving techniques such as uninformed and informed search, constraint satisfaction, and adversarial search to design solutions for real-world problems. (C3)","Communicate and justify AI system designs, algorithms, and outcomes effectively through technical reports and oral presentations. (C4)","Evaluate the ethical, professional, and societal implications of Artificial Intelligence applications to promote responsible and fair use of intelligent systems. (C5)"],
+"Software Quality Engineering (SE3053)":["Outline software testing and software quality assurance principles. (C1)","Prepare test cases and test suites for testing all aspects of a system under test (SUT). (C3)","Analyze appropriate software testing techniques and software reliability analysis tools and techniques. (C4)","Compile findings of a quality assurance cycle. (C5)"],
+"Software Project Management (SE-4231)":["Describe Software Project Management concepts, project life-cycle models, process groups and knowledge areas. (C2)","Apply scope definition, estimation (Function Points, COCOMO II) and scheduling techniques (WBS, CPM, PERT) to plan a software project. (C3)","Analyze project cost, schedule, risk and quality using earned value analysis, risk registers and quality metrics to control a software project. (C4)","Use modern project management tools (MS Project / ProjectLibre, Jira) to plan, track and report a software project following Agile/Scrum practices. (C3)"],
+"Theory of Automata (CS3683)":["Explain and manipulate the different concepts in automata theory and formal languages such as formal proofs, automata, regular expressions, Turing machines etc. (C2)","Define the concept and structure of a Turing Machine, and how it performs simple computational tasks using its components and transition functions. (C1)","Apply the concepts of finite automata, regular expressions, and context-free grammars to represent different types of formal languages. (C3)","Differentiate and manipulate formal descriptions of languages, automata and grammars with focus on regular and context-free languages, finite automata and regular expressions. (C4)"]
+};
+async function pdfLines(buf){const pdf=await pdfjsLib.getDocument({data:buf}).promise;const out=[];
+ for(let p=1;p<=pdf.numPages;p++){const c=await (await pdf.getPage(p)).getTextContent();let ly=null,cur="";
+  for(const it of c.items){const y=it.transform[5];if(ly!==null&&Math.abs(y-ly)>2){out.push(cur);cur=""}cur+=(cur&&!cur.endsWith(" ")?" ":"")+it.str;ly=y}
+  out.push(cur)}return out.map(s=>s.trim()).filter(Boolean)}
+async function readFile(f){const n=f.name.toLowerCase();
+ if(n.endsWith(".docx")){const r=await mammoth.extractRawText({arrayBuffer:await f.arrayBuffer()});return r.value}
+ if(n.endsWith(".pdf")){return (await pdfLines(await f.arrayBuffer())).join("\n")}
+ return await f.text()}
+function splitQ(txt){const lines=txt.replace(/\r/g,"").split("\n");const qs=[];let cur=null;
+ const start=/^\s*(?:(?:Question|Ques|Q)\s*[.\-#]?\s*)(\d{1,2})\b[\s.:)\-]*(.*)$/i;const start2=/^\s*(\d{1,2})\s*[.)]\s+(.*)$/;
+ for(const l of lines){let m=l.match(start)||l.match(start2);
+  if(m&&(m[2].length>3||!cur)){cur={n:m[1],t:m[2]};qs.push(cur)}else if(cur&&l.trim())cur.t+="\n"+l.trim()}
+ if(qs.length<2){const parts=txt.split(/\n\s*\n/).map(s=>s.trim()).filter(s=>s.length>15);return parts.map((t,i)=>({n:String(i+1),t}))}
+ return qs}
+function marksOf(t){const a=[...t.matchAll(/[\[(]\s*(\d+(?:\.\d+)?)\s*(?:marks?|pts?|points?)?\s*[\])]/gi)];if(a.length)return a.reduce((s,m)=>s+ +m[1],0);const b=[...t.matchAll(/(\d+(?:\.\d+)?)\s*marks?/gi)];return b.length?b.reduce((s,m)=>s+ +m[1],0):0}
+function col(p){return p>=55?"var(--ok)":p>=40?"var(--wr)":"var(--bad)"}
+const html=htm.bind(React.createElement);const {useState}=React;
+function parseSets(L){const sets={};let course=null,tag="",cur=null,cl=null;
+for(let i=0;i<L.length;i++){const l=L[i];
+ if(/^CLOs - Computer Science/.test(l)||/^(HEC curriculum:|Code |No CLOs|HEC Curriculum CLOs)/.test(l))continue;
+ let m=l.match(/^(\d{1,2})\.\s+(.+)$/);
+ if(m&&L[i+1]&&/^HEC curriculum:/.test(L[i+1])){course=m[2];tag="HEC";cur=null;continue}
+ m=l.match(/^Faculty CLOs - (.+)$/);
+ if(m){tag=m[1];const code=(L[i+1]||"").match(/^Code\s+(\S+(?:\s\d+)?)/);sets[course+" – "+tag+(code?" ("+code[1]+")":"")]=cur=[];cl=null;continue}
+ if(course&&tag==="HEC"&&!cur&&/^CLO-\d/.test(l))sets[course+" – HEC"]=cur=[];
+ m=l.match(/^CLO-(\d+):\s*(.*)$/);if(m&&cur){cur.push(m[2]);cl=cur.length-1;continue}
+ if(cur&&cl!==null&&!/^\d{1,2}\.\s/.test(l))cur[cl]+=" "+l}
+ const o={};Object.keys(sets).filter(k=>sets[k].length).forEach(k=>o[k]=sets[k].map(s=>s.replace(/\s+/g," ").trim()));return o}
+const toTxt=a=>(a||[]).map((c,i)=>"CLO-"+(i+1)+": "+c).join("\n");
+const parseCLOs=t=>t.split(/\n+/).map(l=>l.trim()).filter(Boolean).map((l,i)=>{const m=l.match(/^CLO[\s-]*(\d+)\s*[:.\-]\s*(.*)$/i);return{n:m?+m[1]:i+1,text:m?m[2]:l}});
+function Bar({label,p,dim}){return html`<div><div class="bl"><span>${label}</span><span>${p.toFixed(0)}%</span></div><div class="bar"><i style=${{width:p+"%",opacity:dim?.45:1}}></i></div></div>`}
+async function ask(p){
+ try{if(window.claude){const sm=await claude.use("sample");if(sm)return await sm.json(p,{modelTier:"default"})}}catch(e){}
+ const r=await fetch("/api/match",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({prompt:p})});
+ if(!r.ok)throw new Error("Server error "+r.status);const d=await r.json();
+ return JSON.parse(d.text.replace(/```json|```/g,"").trim())}
+async function aiMatch(qs,clos){const p="You map exam questions to Course Learning Outcomes (CLOs). Decide by BOTH the topic the question tests and the cognitive level it demands. Level 1 = knowledge/understanding (define, describe, identify, explain, discuss). Level 2 = application (apply, solve, calculate, implement, develop, write code). Level 3 = higher-level (analyze, evaluate, design, justify, compare, critique). Pick the CLO whose topic and level both fit best.\nCLOs:\n"+clos.map(c=>"CLO-"+c.n+": "+c.text).join("\n")+"\n\nQuestions:\n"+qs.map((q,i)=>i+". "+q.t.slice(0,700)).join("\n")+"\n\nReturn ONLY a JSON array with one item per question, in order: {\"scores\":[one number per CLO in the CLO order above, 0-100, summing to 100],\"why\":\"max 12 words\"}.";
+const a=await ask(p);if(!Array.isArray(a)||a.length!==qs.length)throw new Error("unexpected AI reply, please retry");
+return qs.map((q,i)=>{let pct=(a[i].scores||[]).map(Number);if(pct.length!==clos.length||pct.some(isNaN))pct=clos.map(()=>100/clos.length);const t=pct.reduce((x,y)=>x+y,0)||1;pct=pct.map(x=>x/t*100);let b=0;pct.forEach((x,j)=>{if(x>pct[b])b=j});
+const dm=q.t.match(/CLO[\s-]*(\d+)/i);return{q,pct,best:b,conf:pct[b],marks:marksOf(q.t),declared:dm?+dm[1]:null,why:a[i].why||""}})}
+function Results({res,clos,onFix}){
+ const useM=res.some(r=>r.marks>0),cov=clos.map(()=>0);let tot=0;
+ res.forEach(r=>{const w=useM?r.marks||0:1;cov[r.best]+=w;tot+=w});
+ const ok=res.filter(r=>r.conf>=50).length,ap=Math.round(ok/res.length*100);
+ return html`<div class="card"><div class="sum"><div><div class="mu">Paper alignment with CLOs</div><div class="big" style=${{color:col(ap)}}>${ap}%</div><div class="mu">${ok} of ${res.length} questions clearly match one CLO</div></div>
+ <div style=${{gridColumn:"span 2"}}><div class="mu">CLO coverage (${useM?"by marks":"by number of questions"})</div>
+ ${clos.map((c,i)=>html`<${Bar} key=${i} label=${"CLO-"+c.n} p=${tot?cov[i]/tot*100:0}/>`)}</div></div></div>
+ <div class="card"><b>CLO-wise view</b>
+ ${clos.map((c,i)=>{const m=res.filter(r=>r.best===i);return html`<div class="q" key=${i}><div class="qh"><span>CLO-${c.n}</span>
+ <span class="pill" style=${{background:m.length?"var(--ok)":"var(--bad)"}}>${m.length?m.length+" question"+(m.length>1?"s":""):"Not covered"}</span>
+ <span class="mu">${tot?(cov[i]/tot*100).toFixed(0):0}% of paper</span></div>
+ <div class="qt">${c.text}</div><div class="mu">${m.map(r=>"Q"+r.q.n+(r.marks?" ("+r.marks+" marks)":"")).join(", ")}</div></div>`})}</div>
+ <div class="card"><b>Question-wise mapping</b>
+ ${res.map((r,k)=>{const c=clos[r.best];return html`<div class="q" key=${k}><div class="qh"><span>Question-${r.q.n} → CLO-${c.n}</span>
+ <span class="pill" style=${{background:col(r.conf)}}>${r.pct[r.best].toFixed(0)}% match</span>
+ ${r.marks?html`<span class="mu">${r.marks} marks</span>`:null}
+ ${r.declared?html`<span class="mu">${r.declared===c.n?"✓ matches the CLO written on paper":"⚠ paper says CLO-"+r.declared}</span>`:null}
+ ${r.conf<50?html`<span class="mu" style=${{color:"var(--bad)"}}>low confidence – review</span>`:null}</div>
+ <div class="qt">${r.q.t.length>260?r.q.t.slice(0,260)+"…":r.q.t}</div>
+ ${r.why?html`<div class="mu">Why: ${r.why}</div>`:null}
+ <div class="mu">Disagree? <select style=${{width:"auto",padding:"2px 6px"}} value=${r.best} onChange=${e=>onFix(k,+e.target.value)}>${clos.map((cc,i)=>html`<option key=${i} value=${i}>CLO-${cc.n}</option>`)}</select>${r.fixed?" ✓ changed by you":""}</div>
+ ${clos.map((cc,i)=>html`<${Bar} key=${i} label=${"CLO-"+cc.n} p=${r.pct[i]} dim=${i!==r.best}/>`)}</div>`})}</div>`}
+function App(){
+ const [sets,setSets]=useState(BUILT);const [sel,setSel]=useState(Object.keys(BUILT)[0]);
+ const [clo,setClo]=useState(toTxt(BUILT[Object.keys(BUILT)[0]]));
+ const [paste,setPaste]=useState("");const [file,setFile]=useState(null);
+ const [msg,setMsg]=useState("");const [cloMsg,setCloMsg]=useState("");const [out,setOut]=useState(null);const [busy,setBusy]=useState(false);
+ const extra=Object.keys(sets).filter(n=>!(n in BUILT));
+ const pick=n=>{setSel(n);setClo(toTxt(sets[n]))};
+ const loadPdf=async f=>{if(!f)return;setCloMsg("Reading…");
+  try{const s=parseSets(await pdfLines(await f.arrayBuffer()));setSets(Object.assign({},BUILT,s));setCloMsg(Object.keys(s).length+" CLO sets loaded (HEC + faculty).")}
+  catch(e){setCloMsg("Couldn’t read that PDF: "+e.message)}};
+ const go=async()=>{const clos=parseCLOs(clo);if(clos.length<2){setMsg("Add at least 2 CLOs first.");return}
+  setMsg("Reading paper…");let txt=paste;
+  try{if(file)txt=await readFile(file)}catch(e){setMsg("Couldn’t read the file: "+e.message);return}
+  if(!txt||txt.trim().length<20){setMsg("No readable text found. Upload a file or paste the paper.");return}
+  const qs=splitQ(txt);if(!qs.length){setMsg("Couldn’t find any questions.");return}
+  setBusy(true);setMsg("Claude is matching "+qs.length+" questions to the CLOs…");
+  try{const res=await aiMatch(qs,clos);setOut({res,clos});setMsg(qs.length+" questions checked.")}
+  catch(e){setMsg("Couldn’t check the paper: "+(e.message||e.code||"error")+(e.code==="not_granted"?" (permission was declined)":""))}
+  setBusy(false)};
+ const fix=(k,i)=>{const r=out.res[k],n=r.pct.length,ch=Math.max(70,r.pct[i]),so=r.pct.reduce((a,b,m)=>m===i?a:a+b,0);
+  const pct=r.pct.map((p,m)=>m===i?ch:so?p/so*(100-ch):(100-ch)/(n-1));
+  setOut({...out,res:out.res.map((x,j)=>j===k?{...x,best:i,pct,conf:ch,fixed:true}:x)})};
+ return html`<main><h1>CLO Paper Checker</h1>
+ <p class="s">Upload a question paper and see which CLO each question tests, how much of the paper each CLO covers, and which CLOs are missing.</p>
+ <div class="card"><div class="row"><div><label>1. Subject / CLO set</label>
+ <select value=${sel} onChange=${e=>pick(e.target.value)}>
+  <optgroup label="Built-in (faculty OBE CLOs)">${Object.keys(BUILT).map(n=>html`<option key=${n} value=${n}>${n}</option>`)}</optgroup>
+  ${extra.length?html`<optgroup label="From uploaded CLO PDF">${extra.map(n=>html`<option key=${n} value=${n}>${n}</option>`)}</optgroup>`:null}
+ </select><div class="mu">${(sets[sel]||[]).length} CLOs loaded</div></div>
+ <div><label>Load all 75 subjects (optional): upload the CLO PDF</label><input type="file" accept=".pdf" onChange=${e=>loadPdf(e.target.files[0])}/><div class="mu">${cloMsg}</div></div></div>
+ <label>CLOs for the selected subject (edit freely, one per line, e.g. CLO-1: Explain … (C2))</label><textarea value=${clo} onChange=${e=>setClo(e.target.value)}></textarea></div>
+ <div class="card"><div class="row"><div><label>2. Question paper file (.docx or .pdf)</label><input type="file" accept=".docx,.pdf,.txt" onChange=${e=>setFile(e.target.files[0]||null)}/></div>
+ <div><label>…or paste the paper text</label><textarea value=${paste} onChange=${e=>setPaste(e.target.value)} placeholder="Q1. Define … (5 marks)"></textarea></div></div>
+ <p><button disabled=${busy} onClick=${go}>${busy?"Checking…":"Check paper against CLOs"}</button> <span class="mu">${msg}</span></p></div>
+ ${out?html`<${Results} res=${out.res} clos=${out.clos} onFix=${fix}/>`:null}
+ <p class="mu">Claude judges each question by its topic and the level it demands (basic, application, higher-level) against the CLOs. Review low-confidence questions manually. Scanned (image-only) PDFs can’t be read.</p></main>`}
+ReactDOM.createRoot(document.getElementById("root")).render(html`<${App}/>`);
+</script></body></html>
