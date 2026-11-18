@@ -123,7 +123,7 @@ function App(){
  const fix=(k,i)=>{const r=out.res[k],n=r.pct.length,ch=Math.max(70,r.pct[i]),so=r.pct.reduce((a,b,m)=>m===i?a:a+b,0);
   const pct=r.pct.map((p,m)=>m===i?ch:so?p/so*(100-ch):(100-ch)/(n-1));
   setOut({...out,res:out.res.map((x,j)=>j===k?{...x,best:i,pct,conf:ch,fixed:true}:x)})};
- return html`<main><h1>CLO Paper Checker</h1>
+ return html`<main><h1>CLO Paper Checker by NAJF</h1>
  <p class="s">Upload a question paper and see which CLO each question tests, how much of the paper each CLO covers, and which CLOs are missing.</p>
  <div class="card"><div class="row"><div><label>1. Subject / CLO set</label>
  <select value=${sel} onChange=${e=>pick(e.target.value)}>
